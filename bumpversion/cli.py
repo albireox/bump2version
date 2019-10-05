@@ -262,6 +262,9 @@ def _load_configuration(config_file, explicit_config, defaults):
     log_config = StringIO()
     config.write(log_config)
 
+    if not config.has_section("bumpversion"):
+        config.add_section("bumpversion")
+
     if config.has_option("bumpversion", "files"):
         warnings.warn(
             "'files =' configuration will be deprecated, please use [bumpversion:file:...]",
@@ -730,8 +733,13 @@ class MetadataVersionConfigAdapter(object):
         return self.__config.get(section, key)
 
     def set(self, section, key, value):
-        section, key = self._adapt_key(section, key)
-        return self.__config.set(section, key, value)
+        section, new_key = self._adapt_key(section, key)
+        if key == 'current_version' and new_key == 'version':
+            try:
+                self.__config.remove_option('bumpversion', 'current_version')
+            except Exception:
+                pass
+        return self.__config.set(section, new_key, value)
 
     def items(self, section):
         items = self.__config.items(section)
