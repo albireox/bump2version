@@ -233,10 +233,10 @@ def _load_configuration(config_file, explicit_config, defaults):
         config = RawConfigParser("")
     # don't transform keys to lowercase (which would be the default)
     config.optionxform = lambda option: option
-    config.add_section("bumpversion")
     config_file_exists = os.path.exists(config_file)
 
     if not config_file_exists:
+        config.add_section("bumpversion")
         message = "Could not read config file at {}".format(config_file)
         if explicit_config:
             raise argparse.ArgumentTypeError(message)
